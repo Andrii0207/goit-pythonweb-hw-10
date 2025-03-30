@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 from starlette.responses import JSONResponse
 
@@ -16,6 +17,14 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         content={"error": "Перевищено ліміт запитів. Спробуйте пізніше."},
     )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(utils.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
